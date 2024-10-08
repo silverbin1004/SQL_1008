@@ -1,0 +1,233 @@
+문제 1 - 각 학생이 수강 중인 과목의 이름을 모두 출력하는 쿼리를 작성하세요.
+students (student_id, name)
+enrollments (student_id, course_id)
+courses (course_id, course_name)
+
+  -> select courses.course_name, students.name
+     from students
+     inner join enrollments
+     on enrollments.student_id = students.student_id
+     inner join courses
+     on enrollments.course_id = courses.course_id;
+
+
+---------------------------------------------------------
+문제 2 - 모든 직원의 이름과 그들의 부서 이름을 가져오되, 부서가 없는 직원도 포함하여 부서가 없는 경우 부서 이름을 'None'으로 표시하는 쿼리를 작성하세요.
+  employees (employee_id, name, dept_id)
+  departments (dept_id, dept_name)
+
+  -> select employees.name, departments.dept_name
+     from employees
+     left join departments
+     on employees.dept_id = departments.dept_id;
+
+
+---------------------------------------------------------
+문제 3 - 모든 공급업체의 이름과 그들이 제공하는 제품의 이름을 가져오되, 제품이 없는 공급업체도 포함하여 제품 이름을 'No Product'로 표시하는 쿼리를 작성하세요.
+  products (product_id, supplier_id, product_name)
+  suppliers (supplier_id, supplier_name)
+
+  -> select suppliers.supplier_name, coalesce(products.product_name, 'No Product') as product_name
+     from suppliers
+     right join products
+     on suppliers.supplier_id = products.supplier_id;
+
+
+---------------------------------------------------------
+문제 4 - 모든 학생과 모든 동아리를 가져오고, 학생이 어떤 동아리에 소속되어 있다면 그 동아리 이름을, 아니라면 NULL을 표시하는 쿼리를 작성하세요.
+  students (student_id, name)
+  clubs (club_id, club_name)
+  club_memberships (student_id, club_id)
+
+  -> select students.name, clubs.club_name
+     from students
+     full outer join club_memberships
+     on students.student_id = club_memberships.student_id
+     full outer join clubs
+     on club_memberships.club_id = clubs.club_id;
+
+
+---------------------------------------------------------
+문제 5 - 각 직원의 이름과 그들의 매니저 이름을 함께 출력하는 쿼리를 작성하세요. 매니저가 없는 경우 매니저 이름을 'No Manager'로 표시하세요.
+  employees (employee_id, name, manager_id)
+
+  -> select e.name, coalesce(m.name, 'No Manager') as m.name
+     from employees e
+     inner join employees m
+     on e.manager_id = m.employee_id;
+
+
+---------------------------------------------------------
+문제 6 - 각 지역별 총 판매액을 계산하고, 총 판매액이 100,000 이상인 지역만 지역 이름과 총 판매액을 출력하는 쿼리를 작성하세요.
+  sales (sale_id, region, amount)
+
+  -> select region, sum(amount)
+     from sales
+     group by region
+     having amount >= 100000; 
+
+
+---------------------------------------------------------
+문제 7 - 가격이 가장 비싼 상위 5개의 제품 이름과 가격을 출력하는 쿼리를 작성하세요.
+  products (product_id, product_name, price)
+
+  -> select product_name, price
+     from products
+     order by max(price) desc limit 5;
+
+
+---------------------------------------------------------
+문제 8 - 각 고객별 주문 횟수를 계산하고, 주문 횟수가 5회 이상인 고객의 ID와 주문 횟수를 출력하는 쿼리를 작성하세요.
+  orders (order_id, customer_id, order_date)
+
+  -> select customer_id, count(*)
+     from orders
+     where count(customer_id) >= 5;
+
+
+---------------------------------------------------------
+문제 9 - 각 부서별 총 급여 합계와 평균 급여를 계산하고 부서 이름, 총 합계, 평균 급여를 출력하는 쿼리를 작성하세요.
+  employees (employee_id, name, department, salary)
+
+  -> select department, sum(salary) as 총합계, avg(salary) as 평균급여
+     from employees
+     group by department;
+
+
+---------------------------------------------------------
+문제 10 - 전체 제품 중 가장 비싼 제품과 가장 저렴한 제품의 이름과 가격을 각각 출력하는 쿼리를 작성하세요.
+  products (product_id, product_name, price)
+
+  -> select product_name, price
+     from products
+     group by price desc limit 1;
+
+  -> select product_name, price
+     from products
+     group by price asc limit 1;
+
+
+---------------------------------------------------------
+문제 11 - 직원들의 평균 급여보다 높은 급여를 받는 직원의 이름과 급여를 출력하는 쿼리를 작성하세요.
+  employees (employee_id, name, salary)
+
+  -> select name, salary
+     from employees
+     where salary > (select avg(salary)
+                     from employees
+                     );
+
+
+---------------------------------------------------------
+문제 12 - 주문을 한 적이 있는 고객의 이름과 ID를 출력하는 쿼리를 작성하세요.
+  customers (customer_id, name)
+  orders (order_id, customer_id, order_date)
+
+  -> select name, customer_id
+     from customers
+     where exists (select *
+                   from orders
+                   where customers.customer_id = orders.customer_id);
+
+
+---------------------------------------------------------
+문제 13 - 현재 재학생과 졸업생의 이름을 모두 포함하는 명단을 중복 없이 출력하는 쿼리를 작성하세요.
+  current_students (student_id, name)
+  alumni (alumni_id, name)
+
+  -> select name from current_students 
+     union
+     select name from alumni;
+
+
+---------------------------------------------------------
+문제 14 - 회원이면서 뉴스레터 구독자인 고객의 이름을 출력하는 쿼리를 작성하세요.
+  customers (customer_id, name)
+  subscribers (customer_id, email)
+
+  -> select name from customers
+     intersect
+     select name from subscribers;
+
+
+---------------------------------------------------------
+문제 15 - 졸업하지 않은 학생들의 이름을 출력하는 쿼리를 작성하세요.
+  students (student_id, name)
+  graduates (student_id, graduation_date)
+
+  -> select name
+     from students
+     except 
+     select name 
+     from graduates;
+
+
+---------------------------------------------------------
+문제 16 - CTE를 사용하여 각 부서별 평균 급여를 계산하고, 평균 급여보다 낮은 급여를 받는 직원의 이름, 부서, 급여를 출력하는 쿼리를 작성하세요.
+  employees (employee_id, name, department, salary)
+
+  -> with employeesCTE as (
+      select department, avg(salary) as avg_salary
+      from employees
+      group by department
+     )
+     select employees.name, employees.department, employees.salary
+     from employeesCTE, employees
+     where employeesCTE.avg_salary > employees.salary;
+
+
+---------------------------------------------------------
+문제 17 - 재귀 CTE를 사용하여 모든 카테고리와 하위 카테고리를 계층적으로 표시하는 쿼리를 작성하세요.
+  categories (category_id, category_name, parent_id)
+  
+  -> with recursive categoryHierarchy as (
+     select category_id, category_name, parent_id
+     from categories
+     where parent_id is null
+     union all
+     select c.category_id, c.category_name, c.parent_id
+     from categories categories
+     join categoryHierarchy ch on c.parent_id = ch.category_id
+    )
+    select * from categoryHierarchy;
+
+
+---------------------------------------------------------
+문제 18 - 각 영업사원의 총 판매액과 전체 영업사원 중에서의 판매액 순위를 계산하여 영업사원 ID, 총 판매액, 순위를 출력하는 쿼리를 작성하세요.
+  sales (sale_id, salesperson_id, amount, sale_date)
+
+  -> select sale_id, sum(amount), rank() over (order by amount desc) as rank
+     from sales
+     group by salesperson_id;
+
+---------------------------------------------------------
+문제 19 - 계좌 ID가 1인 계좌에서 계좌 ID가 2인 계좌로 500달러를 이체하는 트랜잭션을 작성하세요. 이체 중 오류가 발생하면 모든 작업이 취소되도록 해야 합니다.
+  accounts (account_id, customer_id, balance)
+
+  -> begin transaction;
+     update accounts
+     set balance = balance - 500
+     where account_id = 1;
+
+     update accounts
+     set balance = balance + 500
+     where account_id = 2;
+
+     commit;
+
+     //error
+     rollback;
+
+
+---------------------------------------------------------
+문제 20 - department와 hire_date 컬럼에 복합 인덱스를 생성하는 쿼리를 작성하고, 특정 부서에서 최근에 고용된 직원 10명의 이름과 고용일을 빠르게 조회하는 쿼리를 작성하세요.
+  employees (employee_id, name, department, hire_date)
+
+  -> select name, hire_date
+     from employees
+     where department = 'Sales'
+     order by hire_date desc
+     limit 10;
+
+
+
