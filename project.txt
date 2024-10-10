@@ -73,7 +73,7 @@ courses (course_id, course_name)
 
   -> select product_name, price
      from products
-     order by max(price) desc limit 5;
+     order by price desc limit 5;
 
 
 ---------------------------------------------------------
@@ -100,11 +100,11 @@ courses (course_id, course_name)
 
   -> select product_name, price
      from products
-     group by price desc limit 1;
+     order by price desc limit 1;
 
   -> select product_name, price
      from products
-     group by price asc limit 1;
+     order by price asc limit 1;
 
 
 ---------------------------------------------------------
@@ -125,7 +125,7 @@ courses (course_id, course_name)
 
   -> select name, customer_id
      from customers
-     where exists (select *
+     where exists (select 1
                    from orders
                    where customers.customer_id = orders.customer_id);
 
